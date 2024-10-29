@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Translator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1 id="header">Text Translator</h1>
+    <input id="text" type="text" placeholder="Enter text to translate" />
+
+    <label for="sourceLanguage">Source Language:</label>
+    <select id="sourceLanguage"></select>
+    <!-- Will be populated dynamically -->
+
+    <label for="targetLanguage">Target Language:</label>
+    <select id="targetLanguage"></select>
+    <!-- Will be populated dynamically -->
+
+    <button id="translate">Translate</button>
+    <div id="result"></div>
+
+    <script>
+      const languages = [
+        { name: "Auto Detect", code: "auto" },
+        { name: "Afrikaans", code: "af" },
+        { name: "Albanian", code: "sq" },
+        { name: "Arabic", code: "ar" },
+        { name: "Armenian", code: "hy" },
+        { name: "Azerbaijani", code: "az" },
+        { name: "Basque", code: "eu" },
+        { name: "Belarusian", code: "be" },
+        { name: "Bengali", code: "bn" },
+        { name: "Bosnian", code: "bs" },
+        { name: "Bulgarian", code: "bg" },
+        { name: "Catalan", code: "ca" },
+        { name: "Chinese (Simplified)", code: "zh-CN" },
+        { name: "Chinese (Traditional)", code: "zh-TW" },
+        { name: "Croatian", code: "hr" },
+        { name: "Czech", code: "cs" },
+        { name: "Danish", code: "da" },
+        { name: "Dutch", code: "nl" },
+        { name: "English", code: "en" },
+        { name: "Estonian", code: "et" },
+        { name: "Finnish", code: "fi" },
+        { name: "French", code: "fr" },
+        { name: "Galician", code: "gl" },
+        { name: "Georgian", code: "ka" },
+        { name: "German", code: "de" },
+        { name: "Greek", code: "el" },
+        { name: "Haitian Creole", code: "ht" },
+        { name: "Hebrew", code: "iw" },
+        { name: "Hindi", code: "hi" },
+        { name: "Hungarian", code: "hu" },
+        { name: "Icelandic", code: "is" },
+        { name: "Indonesian", code: "id" },
+        { name: "Irish", code: "ga" },
+        { name: "Italian", code: "it" },
+        { name: "Japanese", code: "ja" },
+        { name: "Kazakh", code: "kk" },
+        { name: "Korean", code: "ko" },
+        { name: "Kurdish (Kurmanji)", code: "ku" },
+        { name: "Kyrgyz", code: "ky" },
+        { name: "Latvian", code: "lv" },
+        { name: "Lithuanian", code: "lt" },
+        { name: "Luxembourgish", code: "lb" },
+        { name: "Macedonian", code: "mk" },
+        { name: "Malay", code: "ms" },
+        { name: "Maltese", code: "mt" },
+        { name: "Norwegian", code: "no" },
+        { name: "Persian", code: "fa" },
+        { name: "Polish", code: "pl" },
+        { name: "Portuguese", code: "pt" },
+        { name: "Romanian", code: "ro" },
+        { name: "Russian", code: "ru" },
+        { name: "Serbian", code: "sr" },
+        { name: "Slovak", code: "sk" },
+        { name: "Slovenian", code: "sl" },
+        { name: "Spanish", code: "es" },
+        { name: "Swahili", code: "sw" },
+        { name: "Swedish", code: "sv" },
+        { name: "Thai", code: "th" },
+        { name: "Turkish", code: "tr" },
+        { name: "Ukrainian", code: "uk" },
+        { name: "Vietnamese", code: "vi" },
+        { name: "Welsh", code: "cy" },
+        { name: "Xhosa", code: "xh" },
+        { name: "Zulu", code: "zu" },
+        { name: "Italian", code: "it" },
+        { name: "Scottish Gaelic", code: "gd" },
+        { name: "Samoan", code: "sm" },
+      ];
+
+      // Function to populate dropdowns with languages
+      function populateLanguageOptions() {
+        const sourceSelect = document.getElementById("sourceLanguage");
+        const targetSelect = document.getElementById("targetLanguage");
+
+        languages.forEach((language) => {
+          const optionSource = document.createElement("option");
+          optionSource.value = language.code;
+          optionSource.textContent = language.name;
+          sourceSelect.appendChild(optionSource); // Add to source dropdown
+
+          const optionTarget = document.createElement("option");
+          optionTarget.value = language.code;
+          optionTarget.textContent = language.name;
+          targetSelect.appendChild(optionTarget); // Add to target dropdown
+        });
+      }
+
+      // Call the function to populate the dropdowns when the UI loads
+      populateLanguageOptions();
+
+      document.getElementById("translate").onclick = () => {
+        const text = document.getElementById("text").value;
+        const sourceLanguage = document.getElementById("sourceLanguage").value;
+        const targetLanguage = document.getElementById("targetLanguage").value;
+
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "translate",
+              text,
+              targetLanguage,
+              sourceLanguage,
+            },
+          },
+          "*"
+        );
+      };
+
+      // Listen for messages from the plugin code
+      onmessage = (event) => {
+        console.log("Message received:", event.data); // Log received messages from code.js
+        if (event.data.pluginMessage.type === "translated") {
+          document.getElementById(
+            "result"
+          ).innerText = `Translated Text: ${event.data.pluginMessage.text}`;
+        }
+      };
+    </script>
+  </body>
+</html>
